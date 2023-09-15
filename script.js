@@ -1,84 +1,86 @@
-function add (num1, num2) {
-    return result = num1 + num2;
-};
-
-function subtract (num1, num2) {
-    return result = num1 - num2;
-};
-
-function multiply (num1, num2) {
-    return result = num1 * num2;
-};
-
-function divide (num1, num2) {
-    return result = num1 / num2;
-};
-
+let currentInput = "";
 let firstNumber;
 let secondNumber;
 let operator;
 
-function getFirstNumber(event) {
-    display1.textContent += event.target.id;;
-    firstNumber  = display1.textContent;
-    console.log("button clicked")
-    return firstNumber;
-};
+function updateDisplay() {
+    document.getElementById('display').value = currentInput;
+}
 
-function calculate (operator, firstNumber, secondNumber) {
-    if (operator === '+')
-    {
-        result = add(firstNumber, secondNumber);
-    }
-    else if (operator === '-')
-    {
-        result = subtract(firstNumber, secondNumber);
-    }
-    else if (operator === '*')
-    {
-        result = multiply(firstNumber, secondNumber);
-    }
-    else if (operator === '/')
-    {
-        result = divide(firstNumber, secondNumber);
-    }
-};
-
-const display1 = document.querySelector('.display-1');
-const display2 = document.querySelector('.display-2');
-const display3 = document.querySelector('.display-3');
-const container = document.querySelector('.container');
 const digits = document.querySelectorAll('.digits');
-const buttons = document.querySelectorAll('button');
-const clear = document.querySelector('#clear');
+digits.forEach((button) => {
+    button.addEventListener('click', () => {
+        const digit = button.textContent;
+        
+        if (currentInput === '0') {
+            currentInput = digit; // Replace '0' with the first digit
+        } else {
+            currentInput += digit;
+        }
+        updateDisplay();
+    })
+})
+
 const operators = document.querySelectorAll('.operators');
-const equals = document.querySelector('#equals');
-
-
-digits.forEach((button) => button.addEventListener('click', getFirstNumber));
-digits.forEach((button) => button.addEventListener("click", function(event) {
-    event.stopPropagation();
-}));
-
-// function getOperator() {
-//     operators.forEach((button) => button.addEventListener('click', () => {
-//         display2.textContent += button.id;
-//         operator = display2.textContent;
-//         console.log("operator clicked");
-//     }));
-//     return operator;
-// };
-
-// function getSecondNumber() {
-//     digits.forEach((button) => button.addEventListener('click', () => {
-//         display3.textContent += button.id;
-//         secondNumber = display3.textContent;
-//     }));
-//     return secondNumber;
-// };
-
-clear.addEventListener('click', () => {
-    display1.textContent = "";
-    display2.textContent = "";
-    display3.textContent = "";
+operators.forEach((operatorButton) => {
+    operatorButton.addEventListener('click', () => {
+        if (currentInput !== '') {
+            firstNumber = currentInput;
+            currentInput = '';
+            if (operatorButton.id === "+") {
+                operator = '+';
+                updateDisplay();
+            }
+            else if (operatorButton.id === "-") {
+                operator = '-';
+                updateDisplay();
+            }
+            else if (operatorButton.id === "*") {
+                operator = '*';
+                updateDisplay();
+            } 
+            else if (operatorButton.id === "/") {
+                operator = '/';
+                updateDisplay();
+            }
+        }
+    });
 });
+
+document.getElementById('clear').addEventListener('click', () => {
+    currentInput = '';
+    firstNumber = '';
+    operator = '';
+    updateDisplay();
+});
+
+document.getElementById('calculate').addEventListener('click', () => {
+    if (currentInput !== '' && firstNumber !== '' && operator !== '') {
+        const secondNumber = currentInput;
+        console.log(firstNumber);
+        console.log(operator);
+        console.log(secondNumber);
+        currentInput = calculate(parseFloat(firstNumber), operator, parseFloat(secondNumber));
+        firstNumber = '';
+        operator = '';
+        updateDisplay();
+    }
+});
+
+function calculate (firstNumber, operator, secondNumber) {
+    switch (operator) {
+        case '+':
+            return firstNumber + secondNumber;
+        case '-':
+            return firstNumber - secondNumber;
+        case '*':
+            return firstNumber * secondNumber;
+        case '/':
+            if (secondNumber === 0) {
+                return 'Error';
+            }
+            return firstNumber / secondNumber;
+        default:
+            return 'Error';
+    }
+};
