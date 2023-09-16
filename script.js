@@ -1,7 +1,7 @@
 let currentInput = "";
-let firstNumber;
-let secondNumber;
-let operator;
+let firstNumber = "";
+let operator = "";
+let result = null;
 
 function updateDisplay() {
     document.getElementById('display').value = currentInput;
@@ -12,8 +12,9 @@ digits.forEach((button) => {
     button.addEventListener('click', () => {
         const digit = button.textContent;
         
-        if (currentInput === '0') {
-            currentInput = digit; // Replace '0' with the first digit
+        if (currentInput === '0' || currentInput === firstNumber) {
+            currentInput = digit; // Replace '0' or previous result with the first digit
+            result = null;
         } else {
             currentInput += digit;
         }
@@ -25,25 +26,21 @@ const operators = document.querySelectorAll('.operators');
 operators.forEach((operatorButton) => {
     operatorButton.addEventListener('click', () => {
         if (currentInput !== '') {
-            firstNumber = currentInput;
-            currentInput = '';
-            if (operatorButton.id === "+") {
-                operator = '+';
+            if (firstNumber === "") {
+                firstNumber = currentInput;
+                operator = operatorButton.id;
+                currentInput = '';
                 updateDisplay();
             }
-            else if (operatorButton.id === "-") {
-                operator = '-';
-                updateDisplay();
-            }
-            else if (operatorButton.id === "*") {
-                operator = '*';
-                updateDisplay();
-            } 
-            else if (operatorButton.id === "/") {
-                operator = '/';
+            else if (firstNumber !== '' && operator !== '') {
+                result = calculate(parseFloat(firstNumber), operator, parseFloat(currentInput));
+                currentInput = result;
+                firstNumber = result;
+                operator = operatorButton.id;
                 updateDisplay();
             }
         }
+        
     });
 });
 
@@ -51,16 +48,14 @@ document.getElementById('clear').addEventListener('click', () => {
     currentInput = '';
     firstNumber = '';
     operator = '';
+    result = null;
     updateDisplay();
 });
 
 document.getElementById('calculate').addEventListener('click', () => {
     if (currentInput !== '' && firstNumber !== '' && operator !== '') {
-        const secondNumber = currentInput;
-        console.log(firstNumber);
-        console.log(operator);
-        console.log(secondNumber);
-        currentInput = calculate(parseFloat(firstNumber), operator, parseFloat(secondNumber));
+        result = calculate(parseFloat(firstNumber), operator, parseFloat(currentInput));
+        currentInput = result.toString();
         firstNumber = '';
         operator = '';
         updateDisplay();
@@ -70,16 +65,16 @@ document.getElementById('calculate').addEventListener('click', () => {
 function calculate (firstNumber, operator, secondNumber) {
     switch (operator) {
         case '+':
-            return firstNumber + secondNumber;
+            return Math.round((firstNumber + secondNumber)* 100)/ 100;
         case '-':
-            return firstNumber - secondNumber;
+            return Math.round((firstNumber - secondNumber)* 100)/ 100;
         case '*':
-            return firstNumber * secondNumber;
+            return Math.round((firstNumber * secondNumber)* 100)/ 100;
         case '/':
             if (secondNumber === 0) {
                 return 'Error';
             }
-            return firstNumber / secondNumber;
+            return Math.round((firstNumber / secondNumber)* 100)/ 100;
         default:
             return 'Error';
     }
